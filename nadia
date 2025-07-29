@@ -1,0 +1,77 @@
+CREATE DATABASE IF NOT EXISTS sekolah;
+USE sekolah;
+
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50),
+  password VARCHAR(255),
+  role ENUM('admin', 'guru', 'siswa')
+);
+
+CREATE TABLE siswa (id INT AUTO_INCREMENT PRIMARY KEY,
+  nama VARCHAR(100),
+  nis VARCHAR(20),
+  kelas VARCHAR(10)
+);
+
+CREATE TABLE guru (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nama VARCHAR(100),
+  nip VARCHAR(20),
+  mapel VARCHAR(50)
+);
+
+CREATE TABLE nilai (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  siswa_id INT,
+  mapel VARCHAR(50),
+  nilai INT
+);
+
+<?php
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db   = "sekolah";
+
+$koneksi = mysqli_connect($host, $user, $pass, $db);
+
+if (!$koneksi) {
+    die("Koneksi gagal: " . mysqli_connect_error());
+}<?php
+session_start();
+include "config.php";
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  $user = $_POST['username'];
+  $pass = md5($_POST['password']);
+  $query = mysqli_query($koneksi, "SELECT * FROM users WHERE username='$user' AND password='$pass'");
+  $data = mysqli_fetch_assoc($query);
+  if ($data) {
+    $_SESSION['user'] = $data;
+    header("Location: dashboard.php");
+  } else {
+    echo "Login gagal!";
+  }
+}
+?>
+
+INSERT INTO users (username, password, role) VALUES
+('admin', MD5('admin123'), 'admin'),
+('guru', MD5('guru123'), 'guru'),
+('siswa', MD5('siswa123'), 'siswa');<?php
+$koneksi = mysqli_connect("localhost", "root", "", "sekolah");
+if (!$koneksi) {
+  die("Koneksi gagal: " . mysqli_connect_error());
+}
+?>
+
+<form method="POST">
+  <input name="username" placeholder="Username"><br>
+  <input name="password" type="password" placeholder="Password"><br>
+  <button type="submit">Login</button>
+</form>
+
+
+
+
+
